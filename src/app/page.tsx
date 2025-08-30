@@ -1,102 +1,191 @@
+'use client';
+
 import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [email, setEmail] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setIsLoading(true);
+    
+    try {
+      const response = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setIsSubmitted(true);
+      } else {
+        alert(data.error || 'Something went wrong. Please try again.');
+      }
+    } catch (error) {
+      console.error('Waitlist submission error:', error);
+      alert('Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-blue-900">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent"></div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+        
+        <div className="relative z-10 container mx-auto px-4 py-16 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-green-400 to-blue-500 rounded-full mb-8">
+              <span className="text-3xl font-bold text-white">⚽</span>
+            </div>
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
+              Welcome to{" "}
+              <span className="bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+                Tiki Taka
+              </span>
+            </h1>
+            <p className="text-xl md:text-2xl text-green-100 mb-8 max-w-4xl mx-auto">
+              The world's first{" "}
+              <span className="font-semibold text-yellow-300">BanterFi platform</span> where{" "}
+              <span className="font-semibold text-yellow-300">football banter meets prediction markets</span> and{" "}
+              <span className="font-semibold text-yellow-300">every joke could earn you crypto</span>
+            </p>
+          </div>
+
+          {/* Waitlist Section */}
+          <div className="max-w-2xl mx-auto mb-16">
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-white mb-4">🚀 Join the BanterFi Revolution</h2>
+                <p className="text-green-100 text-lg">
+                  Be among the first to turn your football banter into crypto rewards
+                </p>
+              </div>
+
+              {!isSubmitted ? (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <label className="block text-green-100 text-sm mb-2">Email Address</label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email"
+                      className="w-full p-4 bg-white/10 border border-white/20 rounded-lg text-white placeholder-green-300 focus:outline-none focus:border-green-400 text-lg"
+                      required
+                    />
+                  </div>
+                  
+                  <button
+                    type="submit"
+                    disabled={isLoading || !email}
+                    className="w-full bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? 'Joining...' : 'Join BanterFi'}
+                  </button>
+                </form>
+              ) : (
+                <div className="text-center">
+                  <div className="text-6xl mb-4">🎉</div>
+                  <h3 className="text-2xl font-bold text-white mb-4">You're in the banter!</h3>
+                  <p className="text-green-100 mb-6">
+                    We'll notify you as soon as Tiki Taka launches. Get ready to banter your way to crypto rewards!
+                  </p>
+                  <div className="bg-green-500/20 border border-green-400/30 rounded-lg p-4">
+                    <p className="text-green-200 text-sm">
+                      💡 Early access users will receive exclusive TIKI tokens and premium banter features
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Features Preview */}
+          <div className="mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">
+              What's BanterFi?
+            </h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+                <div className="text-4xl mb-4">💬</div>
+                <h3 className="text-xl font-bold text-white mb-3">Social Banter Markets</h3>
+                <p className="text-green-100">
+                  Predict on real football events: transfer rumors, player drama, manager meltdowns, and more.
+                </p>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+                <div className="text-4xl mb-4">🎯</div>
+                <h3 className="text-xl font-bold text-white mb-3">Banter2Earn</h3>
+                <p className="text-green-100">
+                  Earn tokens for witty predictions, quality banter, and being the funniest football oracle.
+                </p>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+                <div className="text-4xl mb-4">🔥</div>
+                <h3 className="text-xl font-bold text-white mb-3">Viral Moments</h3>
+                <p className="text-green-100">
+                  Predict on football's most chaotic moments: VAR controversies, touchline bust-ups, and more.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="text-center mb-16">
+            <div className="flex justify-center space-x-8 text-green-100">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-white">3,247</div>
+                <div className="text-sm">BanterFi Members</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-white">Q2 2024</div>
+                <div className="text-sm">Launch Date</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-white">100%</div>
+                <div className="text-sm">Banter Powered</div>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA Section */}
+          <div className="text-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link href="/roadmap" className="bg-transparent border-2 border-white/30 hover:border-white/50 text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 hover:bg-white/10">
+                📊 View Roadmap
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-black/20 backdrop-blur-sm border-t border-white/10 py-8">
+        <div className="container mx-auto px-4 text-center text-green-100">
+          <p className="text-sm">
+            © 2024 Tiki Taka. BanterFi - Where football banter meets crypto rewards! ⚽💬💎
+          </p>
+        </div>
       </footer>
     </div>
   );
